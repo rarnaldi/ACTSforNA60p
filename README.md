@@ -77,7 +77,26 @@ In order to run our code, few changes have to be done by hand in ACTS:
 
 to allow tracking also for very low B (not clear if tracking performances are still acceptable)
 
-3) In Plugins/TGeo/include/Acts/Plugins/TGeo/TGeoLayerBuilder.hpp the envelope values have to be modified to allow a rectangular shape
+3) In Examples/Algorithms/TrackFinding/include/ActsExamples/TrackFinding/TrackParamsEstimationAlgorithm.hpp we modify the following values, used in the evaluation of the uncertainties associated to the track parameter estimate performed at the end of the seeding step.
+
+/// Constant term of the loc0 resolution.
+	double sigmaLoc0 = 5 * Acts::UnitConstants::um;
+	/// Constant term of the loc1 resolution.
+	double sigmaLoc1 = 5 * Acts::UnitConstants::um;
+	/// Phi angular resolution.
+	double sigmaPhi = 0.02 * Acts::UnitConstants::degree;
+	/// Theta angular resolution.
+	double sigmaTheta = 0.02 * Acts::UnitConstants::degree;
+	/// q/p resolution.
+	double sigmaQOverP = 0.1 / Acts::UnitConstants::GeV;
+	/// Time resolution.
+	double sigmaT0 = 1400 * Acts::UnitConstants::s;
+	/// Inflate tracks
+	std::array<double, 6> initialVarInflation = {20., 20., 10., 10., 1., 1.};
+
+
+
+4) In Plugins/TGeo/include/Acts/Plugins/TGeo/TGeoLayerBuilder.hpp the envelope values have to be modified to allow a rectangular shape
 
     // Default constructor
     LayerConfig()
@@ -89,7 +108,7 @@ to allow tracking also for very low B (not clear if tracking performances are st
   };
 
 
-4) In Core/src/Geometry/DiscLayer.cpp remove the lines:
+5) In Core/src/Geometry/DiscLayer.cpp remove the lines:
 
     aSurfaces.push_back(
         bSurfaces.at(tubeInnerCover)->surfaceRepresentation().getSharedPtr());
@@ -97,7 +116,7 @@ to allow tracking also for very low B (not clear if tracking performances are st
         bSurfaces.at(tubeOuterCover)->surfaceRepresentation().getSharedPtr());
 
 
-5) In Core/src/Geometry/Layer.cpp add one line:
+6) In Core/src/Geometry/Layer.cpp add one line:
 
   // resize to remove all items that are past the unique range
   sIntersections.resize(std::distance(sIntersections.begin(), it));
